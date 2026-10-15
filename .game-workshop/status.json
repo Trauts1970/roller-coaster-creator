@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "roller-coaster-creator",
+  "name": "Roller Coaster Creator",
+  "repository": "Trauts1970/roller-coaster-creator",
+  "status_branch": "main",
+  "phase": "Planning and repository initialization; no playable build",
+  "next_step": "Development agent: implement Godot 4 v0.1 prototype on dev/roller-coaster-v0.1 with automatic sequential assembly of station, lift, drop, and basic track sections; validate locally without GitHub Actions, then report verified progress separately to main.",
+  "updated_at": "2026-10-15T03:58:00Z",
+  "build_version": null,
+  "download_url": null,
+  "checklist": {
+    "Project scaffold": "In progress",
+    "Automatic track assembly": "Needed",
+    "Manual 3D editor": "Needed",
+    "Physics and failure analysis": "Needed",
+    "First-person ride": "Needed",
+    "Graphics and sound": "Needed",
+    "Local Linux build": "Needed",
+    "Steam Deck updater": "Needed",
+    "Steam Deck playtest": "Needed",
+    "Final release": "Needed"
+  }
+}
