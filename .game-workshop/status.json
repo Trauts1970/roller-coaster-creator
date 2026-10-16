@@ -4,10 +4,10 @@
   "name": "Roller Coaster Creator",
   "repository": "Trauts1970/roller-coaster-creator",
   "status_branch": "main",
-  "phase": "v0.1.0 prototype implemented; local Linux export and headless tests passed; visual and Steam Deck verification pending",
-  "next_step": "Inspect graphics on a graphical host, add banked turns and a safer demo, then implement manual 3D editing and prepare Steam Deck updater/package. Current demo reaches the endpoint but exceeds prototype passenger-load limits; no release download is published.",
-  "updated_at": "2026-10-15T04:23:36Z",
-  "build_version": "0.1.0",
+  "phase": "Local Steam Deck ZIP and desktop updater verified; graphical and hardware testing pending",
+  "next_step": "Stuart: use RollerCoasterCreator v0.1.1 from the resumed-builds bundle in this chat. Close the game, put its unextracted ZIP in Downloads, and run Install-Roller-Coaster-Creator-Updater.desktop once. Future updates use its desktop Update icon. Verify Steam launch, controls and retained saves/settings on Deck. Added banked turns with matching rail/car/camera roll and passenger-load analysis. Demo now passes prototype load limits; track and scene tests passed. Manual 3D editing remains Needed. Eight updater tests, Linux export, actual-ZIP installation and installed-binary headless launch passed. Graphical/Steam Deck/UltraStik acceptance is not confirmed. Game Workshop automatic download is not connected to these local packages; no GitHub release URL is published.",
+  "updated_at": "2026-10-16T02:49:22.586Z",
+  "build_version": "0.1.1",
   "download_url": null,
   "checklist": {
     "Project scaffold": "Ready to test",
@@ -17,8 +17,11 @@
     "First-person ride": "Ready to test",
     "Graphics and sound": "In progress",
     "Local Linux build": "Ready to test",
-    "Steam Deck updater": "Needed",
+    "Steam Deck updater": "Ready to test",
     "Steam Deck playtest": "Needed",
-    "Final release": "Needed"
-  }
+    "Final release": "Needed",
+    "Build checks": "Complete"
+  },
+  "development_branch": "dev/roller-coaster-v0.1",
+  "source_commit": "097b9fcd72f542610474c24350841ef9ef760f70"
 }
