@@ -10,10 +10,12 @@ const CATALOG := {
  "Straight": [18.0, 0.0, 0.0, false],
  "Left turn": [32.0, 0.0, -60.0, false],
  "Right turn": [32.0, 0.0, 60.0, false],
+ "Banked left": [48.0, 0.0, -60.0, false, -45.0],
+ "Banked right": [48.0, 0.0, 60.0, false, 45.0],
  "Hill": [20.0, 25.0, 0.0, false],
  "Brakes": [25.0, 0.0, 0.0, false]
 }
-const DEMO := ["Station", "Lift", "Crest", "Drop", "Valley", "Left turn", "Straight", "Brakes"]
+const DEMO := ["Station", "Lift", "Crest", "Drop", "Valley", "Banked left", "Straight", "Brakes"]
 
 static func build(sequence: Array) -> Array:
  var samples: Array = []
@@ -21,7 +23,7 @@ static func build(sequence: Array) -> Array:
  var yaw := 0.0
  var pitch := 0.0
  var distance := 0.0
- samples.append({"p": p, "s": distance, "t": Vector3.FORWARD, "kind": "Station"})
+ samples.append({"p": p, "s": distance, "t": Vector3.FORWARD, "kind": "Station", "bank": 0.0})
  for kind in sequence:
   if not CATALOG.has(kind):
    return []
@@ -38,7 +40,9 @@ static func build(sequence: Array) -> Array:
    var tangent := Vector3(sin(yaw) * cos(pitch), sin(pitch), -cos(yaw) * cos(pitch))
    p += tangent * ds
    distance += ds
-   samples.append({"p": p, "s": distance, "t": tangent, "kind": kind})
+   # Ease roll in/out so consecutive sections meet upright at their joints.
+   var bank := deg_to_rad(float(spec[4])) * pow(sin(PI*u), 0.5) if spec.size() > 4 else 0.0
+   samples.append({"p": p, "s": distance, "t": tangent, "kind": kind, "bank": bank})
  return samples
 
 static func analyze(samples: Array) -> Dictionary:
@@ -66,7 +70,9 @@ static func analyze(samples: Array) -> Dictionary:
   result.duration += ds / maxf(speed, 0.1)
   var tangent: Vector3 = b.t
   var right := tangent.cross(Vector3.UP).normalized()
-  var up := right.cross(tangent).normalized()
+  var bank: float = b.get("bank", 0.0)
+  var up := right.cross(tangent).normalized().rotated(tangent, bank)
+  right = right.rotated(tangent, bank)
   var acceleration: Vector3 = (b.t - a.t) / ds * speed * speed
   var load := (acceleration + Vector3.UP * 9.81) / 9.81
   var vertical := load.dot(up)
@@ -80,3 +86,4 @@ static func analyze(samples: Array) -> Dictionary:
  result.safe = result.max_vertical_g <= 4.5 and result.min_vertical_g >= -1.0 and result.max_lateral_g <= 1.5
  result.outcome = "Traversable • prototype load limits passed" if result.safe else "Traversable • excessive passenger loads"
  return result
+

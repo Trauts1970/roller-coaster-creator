@@ -79,7 +79,7 @@ func make_ui() -> void:
  v.add_theme_constant_override("separation", 6)
  panel.add_child(v)
  var title := Label.new()
- title.text = "ROLLER COASTER\nCREATOR  /  0.1.0"
+ title.text = "ROLLER COASTER\nCREATOR  /  0.1.1"
  title.add_theme_font_size_override("font_size",24)
  v.add_child(title)
  var hint := Label.new()
@@ -152,9 +152,10 @@ func rebuild() -> void:
   center += p
   if i > 0:
    var prev: Vector3 = samples[i-1].p
-   var right: Vector3 = samples[i].t.cross(Vector3.UP).normalized()*0.8
-   beam(prev-right,p-right,0.12,Color("e5edf0"))
-   beam(prev+right,p+right,0.12,Color("e5edf0"))
+   var right: Vector3 = samples[i].t.cross(Vector3.UP).normalized().rotated(samples[i].t, samples[i].get("bank", 0.0))*0.8
+   var previous_right: Vector3 = samples[i-1].t.cross(Vector3.UP).normalized().rotated(samples[i-1].t, samples[i-1].get("bank", 0.0))*0.8
+   beam(prev-previous_right,p-right,0.12,Color("e5edf0"))
+   beam(prev+previous_right,p+right,0.12,Color("e5edf0"))
    if i % 4 == 0: beam(p-right,p+right,0.16,Color("d98940"))
    if i % 16 == 0: beam(Vector3(p.x,0,p.z),p,0.24,Color("263e51"))
  if not samples.is_empty(): center /= samples.size()
@@ -170,10 +171,13 @@ func _process(delta: float) -> void:
  var b: Dictionary = samples[mini(index+1,samples.size()-1)]
  var u := clampf((distance-float(a.s))/maxf(0.001,float(b.s-a.s)),0,1)
  car.position = a.p.lerp(b.p,u)
- car.look_at(car.position+a.t,Vector3.UP)
+ var forward: Vector3 = a.t.lerp(b.t,u).normalized()
+ var bank := lerpf(float(a.get("bank",0.0)),float(b.get("bank",0.0)),u)
+ var up := forward.cross(Vector3.UP).normalized().cross(forward).normalized().rotated(forward,bank)
+ car.look_at(car.position+forward,up)
  if riding:
-  camera.position = car.position + Vector3.UP*1.35 + a.t*0.65
-  camera.look_at(camera.position+a.t*8,Vector3.UP)
+  camera.position = car.position + up*1.35 + forward*0.65
+  camera.look_at(camera.position+forward*8,up)
  else:
   camera.position = center + Vector3(sin(orbit)*zoom,zoom*0.65,cos(orbit)*zoom)
   camera.look_at(center,Vector3.UP)
@@ -217,3 +221,4 @@ func load_track() -> void:
    return
  sequence = data.sections.duplicate()
  rebuild()
+
