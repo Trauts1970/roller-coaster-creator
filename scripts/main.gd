@@ -1,4 +1,5 @@
 extends Node3D
+const FX = preload("res://scripts/future_paint.gd")
 const Track = preload("res://scripts/track.gd")
 var sequence: Array = Track.DEMO.duplicate()
 var samples: Array = []
@@ -17,27 +18,51 @@ var index := 0
 var orbit := 0.55
 var zoom := 145.0
 var center := Vector3.ZERO
+var park: Node3D
 
 func _ready() -> void:
  add_child(track_root)
  add_child(camera)
  add_child(car)
- camera.far = 2000
+ camera.far = 1400
+ camera.fov = 54
  var sun := DirectionalLight3D.new()
- sun.rotation_degrees = Vector3(-48, -30, 0)
- sun.light_energy = 1.25
+ sun.rotation_degrees = Vector3(-26,-38,0)
+ sun.light_color = Color("ffe2b8")
+ sun.light_energy = 1.05
+ sun.shadow_enabled = true
+ sun.directional_shadow_max_distance = 260
+ sun.shadow_bias = .04
  add_child(sun)
  var env := WorldEnvironment.new()
  env.environment = Environment.new()
- env.environment.background_mode = Environment.BG_COLOR
- env.environment.background_color = Color("92bbce")
- env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
- env.environment.ambient_light_color = Color("cad7e0")
- env.environment.ambient_light_energy = 0.65
+ var sky := Sky.new()
+ var sky_material := ProceduralSkyMaterial.new()
+ sky_material.sky_top_color=Color("244c77")
+ sky_material.sky_horizon_color=Color("d4d8c4")
+ sky_material.ground_horizon_color=Color("adbfab")
+ sky_material.ground_bottom_color=Color("385b60")
+ sky_material.sun_angle_max=3.5
+ sky.sky_material=sky_material
+ env.environment.sky=sky
+ env.environment.background_mode=Environment.BG_SKY
+ env.environment.ambient_light_source=Environment.AMBIENT_SOURCE_SKY
+ env.environment.ambient_light_energy=.35
+ env.environment.tonemap_mode=Environment.TONE_MAPPER_LINEAR
+ env.environment.fog_enabled=true
+ env.environment.fog_light_color=Color("9db7b7")
+ env.environment.fog_density=.0015
  add_child(env)
- box(self, Vector3(0,-0.3,-80), Vector3(600,0.5,600), Color("3b6554"))
- box(car, Vector3(0,0.45,0), Vector3(1.6,0.65,2.4), Color("ffb34c"))
- box(car, Vector3(0,0.9,0.65), Vector3(1.5,0.7,0.25), Color("162b42"))
+ park=preload("res://scripts/park.gd").new()
+ add_child(park)
+ # Sculpted coaster nose, cockpit, side pods and safety harness.
+ box(car,Vector3(0,.38,0),Vector3(1.65,.45,2.8),Color("186577"))
+ box(car,Vector3(0,.7,.2),Vector3(1.35,.5,1.7),Color("df9664"))
+ box(car,Vector3(0,.88,-.7),Vector3(1.25,.25,.45),Color("e1c49c"))
+ for xx in [-.57,.57]:
+  box(car,Vector3(xx,.96,.35),Vector3(.12,.6,.65),Color("142b3b"))
+  box(car,Vector3(xx,.82,-.2),Vector3(.14,.12,1.0),Color("cadbdc"))
+ box(car,Vector3(0,.64,-1.32),Vector3(1.4,.09,.1),Color("9effe7"))
  make_ui()
  rebuild()
 
@@ -48,7 +73,8 @@ func box(parent: Node3D, pos: Vector3, size: Vector3, color: Color) -> MeshInsta
  mesh.mesh = shape
  var material := StandardMaterial3D.new()
  material.albedo_color = color
- material.roughness = 0.65
+ material.roughness = 0.32
+ material.metallic = 0.55 if color.b > color.r else 0.25
  mesh.material_override = material
  parent.add_child(mesh)
  mesh.position = pos
@@ -73,14 +99,15 @@ func make_ui() -> void:
  add_child(layer)
  var panel := PanelContainer.new()
  panel.position = Vector2(16,16)
- panel.size = Vector2(330,768)
+ panel.size = Vector2(304,768)
  layer.add_child(panel)
+ FX.theme_ui(panel)
  var v := VBoxContainer.new()
  v.add_theme_constant_override("separation", 6)
  panel.add_child(v)
  var title := Label.new()
- title.text = "ROLLER COASTER\nCREATOR  /  0.1.1"
- title.add_theme_font_size_override("font_size",24)
+ title.text = "ROLLER COASTER\nCREATOR  /  HORIZON"
+ title.add_theme_font_size_override("font_size",22)
  v.add_child(title)
  var hint := Label.new()
  hint.text = "AUTO ASSEMBLY • select sections in order"
@@ -94,7 +121,7 @@ func make_ui() -> void:
  v.add_child(add_row)
  add_row.add_child(picker)
  button(add_row,"＋ Add",func(): sequence.append(picker.get_item_text(picker.selected)); rebuild())
- list.custom_minimum_size = Vector2(310,130)
+ list.custom_minimum_size = Vector2(278,130)
  list.size_flags_vertical = Control.SIZE_EXPAND_FILL
  v.add_child(list)
  var row := HBoxContainer.new()
@@ -113,17 +140,17 @@ func make_ui() -> void:
  button(saves,"Demo",func(): sequence = Track.DEMO.duplicate(); rebuild())
  button(saves,"Quit",func(): get_tree().quit())
  report.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
- report.custom_minimum_size = Vector2(310,110)
+ report.custom_minimum_size = Vector2(278,110)
  report.add_theme_font_size_override("font_size",16)
  v.add_child(report)
- telemetry.position = Vector2(365,20)
- telemetry.add_theme_color_override("font_color",Color("102c40"))
+ telemetry.position = Vector2(344,28)
+ telemetry.add_theme_color_override("font_color",Color("e7faf7"))
  telemetry.add_theme_font_size_override("font_size",22)
  layer.add_child(telemetry)
  var help := Label.new()
  help.text = "A: test   Y: camera   X: add straight   B: stop\nD-pad left/right: orbit   up/down: zoom\nOpen track prototype • manual editor coming later"
- help.position = Vector2(365,700)
- help.add_theme_color_override("font_color",Color("102c40"))
+ help.position = Vector2(344,720)
+ help.add_theme_color_override("font_color",Color("e7faf7"))
  layer.add_child(help)
 
 func move_section(delta: int) -> void:
@@ -154,11 +181,20 @@ func rebuild() -> void:
    var prev: Vector3 = samples[i-1].p
    var right: Vector3 = samples[i].t.cross(Vector3.UP).normalized().rotated(samples[i].t, samples[i].get("bank", 0.0))*0.8
    var previous_right: Vector3 = samples[i-1].t.cross(Vector3.UP).normalized().rotated(samples[i-1].t, samples[i-1].get("bank", 0.0))*0.8
-   beam(prev-previous_right,p-right,0.12,Color("e5edf0"))
-   beam(prev+previous_right,p+right,0.12,Color("e5edf0"))
-   if i % 4 == 0: beam(p-right,p+right,0.16,Color("d98940"))
-   if i % 16 == 0: beam(Vector3(p.x,0,p.z),p,0.24,Color("263e51"))
+   beam(prev-previous_right,p-right,0.18,Color("abe4df"))
+   beam(prev+previous_right,p+right,0.18,Color("abe4df"))
+   if i % 4 == 0:
+    beam(p-right,p+right,0.20,Color("cf8159"))
+    beam(prev-Vector3.UP*.6,p-Vector3.UP*.6,.32,Color("24606d"))
+   if i % 18 == 0:
+    var foot := Vector3(p.x,0,p.z)
+    beam(foot,p-Vector3.UP*.5,.32,Color("345266"))
+    box(track_root,foot+Vector3.UP*.12,Vector3(1.6,.24,1.6),Color("b0b2a0"))
+    if p.y>10:
+     beam(foot+Vector3(3,0,0),p-Vector3.UP*2,.20,Color("49657a"))
+     beam(foot+Vector3(-3,0,0),p-Vector3.UP*2,.20,Color("49657a"))
  if not samples.is_empty(): center /= samples.size()
+ park.setup(samples)
  report.text = "%s\nPeak %.0f km/h · vertical %.1f…%.1f g\nLateral %.1f g · %.0f m\nIllustrative model; no engineering certification." % [analysis.outcome,analysis.max_speed*3.6,analysis.min_vertical_g,analysis.max_vertical_g,analysis.max_lateral_g,samples[-1].s if not samples.is_empty() else 0.0]
 
 func _process(delta: float) -> void:
@@ -179,8 +215,9 @@ func _process(delta: float) -> void:
   camera.position = car.position + up*1.35 + forward*0.65
   camera.look_at(camera.position+forward*8,up)
  else:
-  camera.position = center + Vector3(sin(orbit)*zoom,zoom*0.65,cos(orbit)*zoom)
-  camera.look_at(center,Vector3.UP)
+  var target := center+Vector3(-22,0,0)
+  camera.position = target + Vector3(sin(orbit)*zoom,zoom*0.48,cos(orbit)*zoom)
+  camera.look_at(target,Vector3.UP)
  telemetry.text = "%s  |  %.0f km/h  |  %.0f / %.0f m" % ["RUNNING" if running else "READY / STOPPED",float(analysis.speeds[mini(index,analysis.speeds.size()-1)])*3.6 if running else 0.0,distance,samples[-1].s]
 
 func _input(event: InputEvent) -> void:

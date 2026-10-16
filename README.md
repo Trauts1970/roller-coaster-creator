@@ -1,5 +1,9 @@
 # Roller Coaster Creator
 
+## Horizon graphics milestone — 0.2.0-alpha.1
+
+A lit 3D park with a physical sky, shadowed track structures, sculpted coaster car, station, promenade, animated lake, smooth terrain, and instanced forest that stays clear of the edited track. This is a stylized procedural graphics upgrade, with gameplay, saved progress and the existing updater workflow retained. See `docs/HORIZON-GRAPHICS.md` for validation and remaining hardware acceptance.
+
 Steam Deck-first Godot 4 roller coaster construction prototype. Version **0.1.0**.
 Development stays on `dev/roller-coaster-v0.1`; `main` carries Game Workshop status separately.
 

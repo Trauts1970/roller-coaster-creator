@@ -13,6 +13,15 @@ func run() -> void:
  check(game.samples.size()>300,"Scene builds track")
  var panel = game.get_children().filter(func(node): return node is CanvasLayer)[0].get_child(0)
  check(panel.position.y+panel.size.y<=800,"Touch panel fits 800-pixel viewport")
+ check(game.park.get_child_count()>15,"Rendered park includes terrain, forest and station")
+ var forests=game.park.get_children().filter(func(n):return n is MultiMeshInstance3D)
+ check(forests.size()==2,"Forest uses batched meshes")
+ for pos in game.park.forest_positions:
+  var clear_of_track:=true
+  for j in range(0,game.samples.size(),10):
+   var track:Vector3=game.samples[j].p
+   if Vector2(pos.x,pos.z).distance_to(Vector2(track.x,track.z))<12:clear_of_track=false
+  check(clear_of_track,"Scenic trees remain clear of editable track")
  game.sequence = ["Station","Straight"]
  game.rebuild()
  game.list.select(1)

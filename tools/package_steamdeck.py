@@ -40,7 +40,9 @@ def main():
                        if p.read_text().lstrip().startswith('extends SceneTree')
                        and p.name not in ['capture.gd', 'presentation.gd'])
         for test in tests:
-            checked([ENGINE, '--headless', '--path', '.', '--script', str(test.relative_to(ROOT))], env)
+            test_data = Path(temporary) / ('case-' + test.stem)
+            test_data.mkdir()
+            checked([ENGINE, '--headless', '--path', '.', '--script', str(test.relative_to(ROOT))], dict(env, XDG_DATA_HOME=str(test_data)))
         checked(['python3', 'tools/updater/test_updater.py'], env)
         checked([ENGINE, '--headless', '--path', '.', '--script', 'tools/export_notices.gd'], env)
         name = CFG['folder'] + '-v' + CFG['version'] + '-SteamDeck'
