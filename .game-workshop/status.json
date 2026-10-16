@@ -4,10 +4,10 @@
   "name": "Roller Coaster Creator",
   "repository": "Trauts1970/roller-coaster-creator",
   "status_branch": "main",
-  "phase": "Local Steam Deck ZIP and desktop updater verified; graphical and hardware testing pending",
-  "next_step": "Stuart: use RollerCoasterCreator v0.1.1 from the resumed-builds bundle in this chat. Close the game, put its unextracted ZIP in Downloads, and run Install-Roller-Coaster-Creator-Updater.desktop once. Future updates use its desktop Update icon. Verify Steam launch, controls and retained saves/settings on Deck. Added banked turns with matching rail/car/camera roll and passenger-load analysis. Demo now passes prototype load limits; track and scene tests passed. Manual 3D editing remains Needed. Eight updater tests, Linux export, actual-ZIP installation and installed-binary headless launch passed. Graphical/Steam Deck/UltraStik acceptance is not confirmed. Game Workshop automatic download is not connected to these local packages; no GitHub release URL is published.",
-  "updated_at": "2026-10-16T02:49:22.586Z",
-  "build_version": "0.1.1",
+  "phase": "Horizon graphics alpha built; Steam Deck acceptance pending",
+  "next_step": "Stuart: download Horizon_Graphics_v0.2.0-alpha.1.zip from this chat. Extract that outer bundle, put this game's inner ZIP unextracted in Downloads, close the game, and use its existing Update desktop icon. Test the new graphics, controls, text/readability and frame rate in Gaming Mode. Local model/input/flow checks, Linux export, headless exported-program smoke launch and actual 1280x800 graphical captures passed; physical Steam Deck/UltraStik acceptance remains pending. This is the first stylized procedural visual upgrade, not final art. Game Workshop has no public auto-download release URL for these local packages.",
+  "updated_at": "2026-10-16T03:54:20.862Z",
+  "build_version": "0.2.0-alpha.1",
   "download_url": null,
   "checklist": {
     "Project scaffold": "Ready to test",
@@ -20,8 +20,9 @@
     "Steam Deck updater": "Ready to test",
     "Steam Deck playtest": "Needed",
     "Final release": "Needed",
-    "Build checks": "Complete"
+    "Build checks": "Complete",
+    "Graphics and levels": "Ready to test"
   },
   "development_branch": "dev/roller-coaster-v0.1",
-  "source_commit": "097b9fcd72f542610474c24350841ef9ef760f70"
+  "source_commit": "92a11645cba817e785e8503e74996dc700ca48dc"
 }
